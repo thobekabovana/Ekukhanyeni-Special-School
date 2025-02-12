@@ -1,5 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Linking } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Linking, Platform } from "react-native";
+
+// Conditionally import MapView based on the platform
+let MapViewComponent;
+if (Platform.OS !== 'web') {
+  MapViewComponent = require('react-native-maps').default; // For native platforms
+} else {
+  // Placeholder map for web
+  MapViewComponent = () => (
+    <View style={{ height: 200, backgroundColor: "#ddd", justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Map is not supported on the web. Use a different map solution here.</Text>
+    </View>
+  );
+}
 
 const ContactScreen = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -51,6 +64,19 @@ const ContactScreen = () => {
         <Text>Phone: </Text>
         <Text style={styles.link} onPress={() => Linking.openURL("tel:+1234567890")}>+1 234 567 890</Text>
       </View>
+
+      {/* Conditionally render MapView based on platform */}
+      <MapViewComponent
+        style={styles.map}
+        initialRegion={{
+          latitude: 37.7749,
+          longitude: -122.4194,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}
+      >
+        <MapViewComponent.Marker coordinate={{ latitude: 37.7749, longitude: -122.4194 }} title="Our Location" />
+      </MapViewComponent>
     </ScrollView>
   );
 };
@@ -66,6 +92,7 @@ const styles = StyleSheet.create({
   buttonText: { color: "#fff", fontWeight: "bold" },
   contactInfo: { marginVertical: 20, alignItems: "center" },
   link: { color: "#007bff", textDecorationLine: "underline" },
+  map: { height: 200, width: "100%", borderRadius: 10, marginTop: 10 },
 });
 
 export default ContactScreen;
